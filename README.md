@@ -1,74 +1,29 @@
 
-# Vagrantfile and Scripts to Automate Kubernetes Setup using Kubeadm [Practice Environment for CKA/CKAD and CKS Exams]
+## Prerequisiti
+- Vagrant
+- WMWARE o VIRTUALBOX: 8 Gig + RAM workstation as the Vms use 3 vCPUS and 4+ GB RAM
 
-A fully automated setup for CKA, CKAD, and CKS practice labs is tested on the following systems:
-
-- Windows
-- Ubuntu Desktop
-- Mac Intel-based systems
-
-If you are MAC Silicon user, Please use the follwing repo.
-
-- [Vagrant Kubeadm Setup on MAC Silicon](https://github.com/techiescamp/vagrant-kubeadm-mac-silicon)
-
-## Kubernetes Certification Voucher (UpTo 40% OFF) 🎉
-
-As part of our commitment to helping the DevOps community save money on Kubernetes Certifications, we continuously update the latest voucher codes from the Linux Foundation
-
-🚀  CKA, CKAD, CKS, or KCNA exam aspirants can **save 35%** today using code **SPOOKY35CT** at https://kube.promo/devops. It is a limited-time offer from the Linux Foundation.
-
-The following are the best bundles to **save 40% (up to $788)** with code **SPOOKY35CT**
-
-- KCNA + KCSA + CKA + CKAD + CKS ($788 Savings): [kube.promo/kubestronaut](https://kube.promo/kubestronaut)
-- CKA + CKAD + CKS Exam bundle ($528 Savings): [kube.promo/k8s-bundle](https://kube.promo/k8s-bundle)
-- CKA + CKS Bundle ($355 Savings) [kube.promo/bundle](https://kube.promo/bundle)
-- KCNA + CKA ( $288 Savings) [kube.promo/kcka-bundle](https://kube.promo/kcna-cka)
-- KCSA + CKS Exam Bundle ($229 Savings) [kube.promo/kcsa-cks](https://kube.promo/kcsa-cks)
-- KCNA + KCSA Exam Bundle ($203 Savings) [kube.promo/kcna-kcsa](https://kube.promo/kcna-kcsa)
-
->Note: You have one year of validity to appear for the certification exam after registration
-
-## Setup Prerequisites
-
-- A working Vagrant setup using Vagrant + VirtualBox
-
-Here is the high level workflow.
-
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/cc5594b5-42c2-4c56-be21-6441f849f537" width="65%" />
-</p>
-
-## Documentation
-
-Current k8s version for CKA, CKAD, and CKS exam: 1.30
-
-The setup is updated with 1.31 cluster version.
-
-Refer to this link for documentation full: https://devopscube.com/kubernetes-cluster-vagrant/
-
-
-## Prerequisites
-
-1. Working Vagrant setup
-2. 8 Gig + RAM workstation as the Vms use 3 vCPUS and 4+ GB RAM
-
-## For MAC/Linux Users
-
-The latest version of Virtualbox for Mac/Linux can cause issues.
-
-Create/edit the /etc/vbox/networks.conf file and add the following to avoid any network-related issues.
-<pre>* 0.0.0.0/0 ::/0</pre>
-
-or run below commands
-
+## Per gli utenti MAC/Linux che usano l'ultima versione di VirtualBox
+Se si utilizza l'ultima versione di VirtualBox, per gli utenti Mac/Linux è necessario creare o aggiungere il file "etc/vbox/networks.conf" e aggiungere: "<pre>* 0.0.0.0/0 ::/0</pre>".
+È possibile anche eseguire il seguente comando:
 ```shell
 sudo mkdir -p /etc/vbox/
 echo "* 0.0.0.0/0 ::/0" | sudo tee -a /etc/vbox/networks.conf
 ```
 
-So that the host only networks can be in any range, not just 192.168.56.0/21 as described here:
-https://discuss.hashicorp.com/t/vagrant-2-2-18-osx-11-6-cannot-create-private-network/30984/23
+## Comandi importanti:
+### Avvio
+- Avvio con Virtualbox:
+  "mv VagrantfileVB Vagrantfile"
+  "vagrant up"
+- Avvio con VMWare:
+  "mv VagranfileVMWare Vagrantfile"
+  "vagrant up --provider wmware_desktop"
+### Shutdown 
+  "vagrant hant"
+### Restart 
+  "vagrant up"
+
 
 ## Bring Up the Cluster
 
