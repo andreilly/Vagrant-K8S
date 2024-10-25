@@ -15,17 +15,28 @@ echo "* 0.0.0.0/0 ::/0" | sudo tee -a /etc/vbox/networks.conf
 ## Comandi importanti:
 ### Avvio
 - Avvio con Virtualbox:
-  "mv VagrantfileVB Vagrantfile"
-  "vagrant up"
+  ```bash
+  mv VagrantfileVB Vagrantfile"
+  vagrant up
+  ```
 - Avvio con VMWare:
-  "mv VagrantfileVMWare Vagrantfile"
-  "vagrant up --provider wmware_desktop"
+  ```bash
+  mv VagrantfileVMWare Vagrantfile
+  vagrant up --provider wmware_desktop
+  ```
+  
 ### Spegnimento 
-  "vagrant hant"
+  ```bash
+  vagrant hant
+  ```
 ### Riavvio 
-  "vagrant up"
+  ```bash
+  vagrant up
+  ```
 ### Eliminare il cluster
-  "vagrant destroy -f"
+  ```bash
+  vagrant destroy -f
+  ```
 
 ## Set Kubeconfig file variable
 
