@@ -1,5 +1,5 @@
 
-## Prerequisiti
+## Software richiesti
 È necessario installare:
 - Vagrant
 - WMWARE o VIRTUALBOX: 8 Gig + RAM workstation as the Vms use 3 vCPUS and 4+ GB RAM
