@@ -1,5 +1,6 @@
 
 ## Prerequisiti
+È necessario installare:
 - Vagrant
 - WMWARE o VIRTUALBOX: 8 Gig + RAM workstation as the Vms use 3 vCPUS and 4+ GB RAM
 
@@ -17,23 +18,15 @@ echo "* 0.0.0.0/0 ::/0" | sudo tee -a /etc/vbox/networks.conf
   "mv VagrantfileVB Vagrantfile"
   "vagrant up"
 - Avvio con VMWare:
-  "mv VagranfileVMWare Vagrantfile"
+  "mv VagrantfileVMWare Vagrantfile"
   "vagrant up --provider wmware_desktop"
-### Shutdown 
+### Spegnimento 
   "vagrant hant"
-### Restart 
+### Riavvio 
   "vagrant up"
+### Eliminare il cluster
+  "vagrant destroy -f"
 
-
-## Bring Up the Cluster
-
-To provision the cluster, execute the following commands.
-
-```shell
-git clone https://github.com/scriptcamp/vagrant-kubeadm-kubernetes.git
-cd vagrant-kubeadm-kubernetes
-vagrant up
-```
 ## Set Kubeconfig file variable
 
 ```shell
@@ -72,24 +65,6 @@ kubectl proxy
 Open the site in your browser:
 ```shell
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
-```
-
-## To shutdown the cluster,
-
-```shell
-vagrant halt
-```
-
-## To restart the cluster,
-
-```shell
-vagrant up
-```
-
-## To destroy the cluster,
-
-```shell
-vagrant destroy -f
 ```
 # Network graph
 
