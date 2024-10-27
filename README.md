@@ -34,6 +34,7 @@ echo "* 0.0.0.0/0 ::/0" | sudo tee -a /etc/vbox/networks.conf
   vagrant up
   ```
 ### Eliminare il cluster
+!!! ATTENZIONE, per evitare problemi è necessario assicurarsi che le macchine siano spente, di conseguenza è necessario eseguire prima lo spegnimento.
   ```bash
   vagrant destroy -f
   ```
