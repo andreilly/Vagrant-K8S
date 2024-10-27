@@ -1,0 +1,133 @@
+---
+- name: Setup for Control Plane (Master) servers
+  hosts: master
+  become: yes
+  vars:
+    control_ip: "{{ CONTROL_IP }}"
+    pod_cidr: "{{ POD_CIDR }}"
+    service_cidr: "{{ SERVICE_CIDR }}"
+    calico_version: "{{ CALICO_VERSION }}"
+    config_path: "/vagrant/configs"
+
+  tasks:
+    - name: Pull Kubernetes images
+      command: kubeadm config images pull
+
+    - name: Display Preflight check message if init was successful
+      debug:
+        msg: "Preflight Check Passed: Downloaded All Required Images"
+
+    - name: Run kubeadm init
+      command: >
+        kubeadm init
+        --apiserver-advertise-address={{ control_ip }}
+        --apiserver-cert-extra-sans={{ control_ip }}
+        --pod-network-cidr={{ pod_cidr }}
+        --service-cidr={{ service_cidr }}
+        --node-name "{{ ansible_hostname }}"
+        --ignore-preflight-errors Swap
+      register: init_output
+      ignore_errors: false
+
+    - name: Crea la directory .kube nella home dell'utente
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0755'
+
+    - name: Copia il file admin.conf nella directory .kube
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        remote_src: yes
+        mode: '0644'
+        force: no
+
+    - name: Ottieni UID dell'utente corrente
+      command: id -u
+      register: current_uid
+
+    - name: Ottieni GID dell'utente corrente
+      command: id -g
+      register: current_gid
+
+    - name: Imposta proprietà su .kube/config per l'utente corrente
+      file:
+        path: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ current_uid.stdout }}"
+        group: "{{ current_gid.stdout }}"
+
+    - name: Imposta il proprietario del file config
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ current_uid.stdout }}"
+        group: "{{ current_gid.stdout }}"
+
+    - name: Controlla se la directory config_path esiste
+      ansible.builtin.stat:
+        path: "{{ config_path }}"
+      register: config_path_stat
+
+    - name: Rimuovi tutti i file nella directory config_path se esiste
+      ansible.builtin.file:
+        path: "{{ config_path }}"
+        state: absent
+      when: config_path_stat.stat.exists
+
+    - name: Crea la directory di destinazione se non esiste
+      file:
+        path: /vagrant/configs
+        state: directory
+        mode: '0755'
+
+    - name: Copia il file admin.conf nella directory config_path
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ config_path }}/config"
+        remote_src: yes
+        mode: '0644'
+        backup: yes
+
+    - name: Crea il file join.sh nella directory config_path
+      ansible.builtin.file:
+        path: "{{ config_path }}/join.sh"
+        state: touch
+        mode: '0755'
+
+    - name: Imposta il permesso eseguibile per join.sh
+      ansible.builtin.file:
+        path: "{{ config_path }}/join.sh"
+        mode: '0755'
+
+
+    - name: Create join script for worker nodes
+      shell: kubeadm token create --print-join-command > {{ config_path }}/join.sh
+
+    - name: Set executable permissions on join script
+      file:
+        path: "{{ config_path }}/join.sh"
+        mode: '0755'
+
+    - name: Download Calico Network Plugin manifest
+      get_url:
+        url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ calico_version }}/manifests/calico.yaml"
+        dest: ./calico.yaml
+
+    - name: Apply Calico Network Plugin
+      command: kubectl apply -f calico.yaml
+      retries: 5
+      delay: 10
+      until: result.rc == 0
+      register: result
+    - name: Esegui comandi come utente vagrant
+      ansible.builtin.shell: |
+        whoami
+        mkdir -p /home/vagrant/.kube
+        cp -i {{ config_path }}/config /home/vagrant/.kube/
+        chown 1000:1000 /home/vagrant/.kube/config
+      become: true
+      become_user: vagrant
+
+
+    - name: Install Metrics Server
+      command: kubectl apply -f https://raw.githubusercontent.com/techiescamp/kubeadm-scripts/main/manifests/metrics-server.yaml
